@@ -178,7 +178,7 @@
     <div class="container">
       <h1>📊 Lymax Activity Tracking Dashboard</h1>
       <p class="subtitle">
-        Real-time activity tracking for Sales, Operations & Marketing Leadership
+        Real-time activity tracking for Sales, Operations, Marketing & Academic Leadership
       </p>
 
       <div class="controls">
@@ -193,6 +193,7 @@
             <option value="Sales">Sales</option>
             <option value="Operations">Operations</option>
             <option value="Marketing">Marketing</option>
+            <option value="Academic">Academic</option>
           </select>
         </div>
       </div>
@@ -227,11 +228,19 @@
         <button class="tab-button" onclick="showTab('marketing')">
           📢 MARKETING
         </button>
+        <button class="tab-button" onclick="showTab('academic')">
+          🎓 ACADEMIC
+        </button>
       </div>
 
       <div id="sales" class="team-section active">
         <h2>🚀 Sales Team Daily Activities</h2>
         <div class="form-group">
+          <input
+            type="text"
+            id="salesEmployee"
+            placeholder="Employee Name"
+          />
           <input
             type="text"
             id="salesTask"
@@ -250,6 +259,11 @@
       <div id="operations" class="team-section">
         <h2>⚙️ Operations Team Daily Activities</h2>
         <div class="form-group">
+          <input
+            type="text"
+            id="operationsEmployee"
+            placeholder="Employee Name"
+          />
           <input type="text" id="operationsTask" placeholder="Task name" />
           <select id="operationsStatus">
             <option>Started</option>
@@ -264,6 +278,11 @@
       <div id="marketing" class="team-section">
         <h2>📢 Marketing Team Daily Activities</h2>
         <div class="form-group">
+          <input
+            type="text"
+            id="marketingEmployee"
+            placeholder="Employee Name"
+          />
           <input type="text" id="marketingTask" placeholder="Task name" />
           <select id="marketingStatus">
             <option>Started</option>
@@ -273,6 +292,25 @@
           <button onclick="addTask('Marketing')">+ Add Task</button>
         </div>
         <div id="marketingTasks" class="tasks-list"></div>
+      </div>
+
+      <div id="academic" class="team-section">
+        <h2>🎓 Academic Team Daily Activities</h2>
+        <div class="form-group">
+          <input
+            type="text"
+            id="academicEmployee"
+            placeholder="Employee Name"
+          />
+          <input type="text" id="academicTask" placeholder="Task name" />
+          <select id="academicStatus">
+            <option>Started</option>
+            <option>In Progress</option>
+            <option>Complete</option>
+          </select>
+          <button onclick="addTask('Academic')">+ Add Task</button>
+        </div>
+        <div id="academicTasks" class="tasks-list"></div>
       </div>
 
       <div class="footer">
@@ -299,12 +337,19 @@
       }
 
       async function addTask(team) {
+        const employeeInput = document.getElementById(`${team.toLowerCase()}Employee`);
         const taskInput = document.getElementById(`${team.toLowerCase()}Task`);
         const statusSelect = document.getElementById(
           `${team.toLowerCase()}Status`
         );
+        const employee = employeeInput.value.trim();
         const task = taskInput.value.trim();
         const status = statusSelect.value;
+
+        if (!employee) {
+          alert('Please enter employee name');
+          return;
+        }
 
         if (!task) {
           alert('Please enter a task');
@@ -319,21 +364,22 @@
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, team, task, status, timestamp }),
+            body: JSON.stringify({ date, team, employee, task, status, timestamp }),
           });
 
-          displayTask(team, task, status, timestamp);
+          displayTask(team, employee, task, status, timestamp);
+          employeeInput.value = '';
           taskInput.value = '';
           updateStats();
           showNotification('Task added successfully!');
         } catch (error) {
           console.error('Error:', error);
-          displayTask(team, task, status, timestamp);
+          displayTask(team, employee, task, status, timestamp);
           updateStats();
         }
       }
 
-      function displayTask(team, task, status, timestamp) {
+      function displayTask(team, employee, task, status, timestamp) {
         const tasksContainer = document.getElementById(
           `${team.toLowerCase()}Tasks`
         );
@@ -341,7 +387,7 @@
         taskElement.className = 'task-item';
         taskElement.innerHTML = `
         <div class="task-name">${task}</div>
-        <div class="task-status">Status: ${status} | Added: ${timestamp}</div>
+        <div class="task-status">Employee: ${employee} | Status: ${status} | Added: ${timestamp}</div>
       `;
         tasksContainer.insertBefore(taskElement, tasksContainer.firstChild);
       }
