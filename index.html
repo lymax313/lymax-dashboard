@@ -251,6 +251,16 @@
             <option>In Progress</option>
             <option>Complete</option>
           </select>
+                    <select id="salesPriority">
+                                  <option>Low</option>
+                                  <option selected>Medium</option>
+                                  <option>High</option>
+                                </select>
+                    <input
+                                  type="date"
+                                  id="salesDeadline"
+                                  placeholder="Deadline"
+                                />
           <button onclick="addTask('Sales')">+ Add Task</button>
         </div>
         <div id="salesTasks" class="tasks-list"></div>
@@ -270,6 +280,12 @@
             <option>In Progress</option>
             <option>Complete</option>
           </select>
+                    <select id="operationsPriority">
+                                  <option>Low</option>
+                                  <option selected>Medium</option>
+                                  <option>High</option>
+                                </select>
+                    <input type="date" id="operationsDeadline" placeholder="Deadline" />
           <button onclick="addTask('Operations')">+ Add Task</button>
         </div>
         <div id="operationsTasks" class="tasks-list"></div>
@@ -289,6 +305,12 @@
             <option>In Progress</option>
             <option>Complete</option>
           </select>
+                    <select id="marketingPriority">
+                                  <option>Low</option>
+                                  <option selected>Medium</option>
+                                  <option>High</option>
+                                </select>
+                    <input type="date" id="marketingDeadline" placeholder="Deadline" />
           <button onclick="addTask('Marketing')">+ Add Task</button>
         </div>
         <div id="marketingTasks" class="tasks-list"></div>
@@ -308,6 +330,12 @@
             <option>In Progress</option>
             <option>Complete</option>
           </select>
+                    <select id="academicPriority">
+                                  <option>Low</option>
+                                  <option selected>Medium</option>
+                                  <option>High</option>
+                                </select>
+                    <input type="date" id="academicDeadline" placeholder="Deadline" />
           <button onclick="addTask('Academic')">+ Add Task</button>
         </div>
         <div id="academicTasks" class="tasks-list"></div>
@@ -345,6 +373,10 @@
         const employee = employeeInput.value.trim();
         const task = taskInput.value.trim();
         const status = statusSelect.value;
+            const prioritySelect = document.getElementById(`${team.toLowerCase()}Priority`);
+            const priority = prioritySelect.value;
+            const deadlineInput = document.getElementById(`${team.toLowerCase()}Deadline`);
+            const deadline = deadlineInput.value || 'No deadline';
 
         if (!employee) {
           alert('Please enter employee name');
@@ -364,18 +396,15 @@
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, team, employee, task, status, timestamp }),
-          });
+        body: JSON.stringify({ date, team, employee, task, status, priority, deadline, timestamp }),          });
 
-          displayTask(team, employee, task, status, timestamp);
-          employeeInput.value = '';
+    displayTask(team, employee, task, status, priority, deadline, timestamp);          employeeInput.value = '';
           taskInput.value = '';
           updateStats();
           showNotification('Task added successfully!');
         } catch (error) {
           console.error('Error:', error);
-          displayTask(team, employee, task, status, timestamp);
-          updateStats();
+      displayTask(team, employee, task, status, priority, deadline, timestamp);          updateStats();
         }
       }
 
@@ -383,12 +412,10 @@
         const tasksContainer = document.getElementById(
           `${team.toLowerCase()}Tasks`
         );
-        const taskElement = document.createElement('div');
-        taskElement.className = 'task-item';
+  function displayTask(team, employee, task, status, priority, deadline, timestamp) {        taskElement.className = 'task-item';
         taskElement.innerHTML = `
         <div class="task-name">${task}</div>
-        <div class="task-status">Employee: ${employee} | Status: ${status} | Added: ${timestamp}</div>
-      `;
+    <div class="task-status">Employee: ${employee} | Status: ${status} | Priority: <span style="color: ${priority === 'High' ? '#ff4444' : priority === 'Low' ? '#44ff44' : '#ffaa44'}">${priority}</span> | Deadline: ${deadline} | Added: ${timestamp}</div>      `;
         tasksContainer.insertBefore(taskElement, tasksContainer.firstChild);
       }
 
@@ -441,3 +468,4 @@
     </script>
   </body>
 </html>
+
